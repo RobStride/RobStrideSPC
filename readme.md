@@ -1,8 +1,6 @@
-\# RobStride 电机控制库使用说明 / RobStride Motor Control Library README
+RobStride 电机控制库使用说明 / RobStride Motor Control Library README
 
-
-
-\## 一、项目简介 Project Introduction
+一、项目简介 Project Introduction
 
 
 
@@ -10,29 +8,27 @@
 
 
 
-> This project is a STM32 control demo for RS01/RobStride motors from Lingzu Era. The core is the `RobStride.h`/`RobStride01.cpp` motor library, supporting both Lingzu private and MIT protocols, implementing enable/disable, position/speed/current/torque/MIT control, parameter settings, zeroing, and protocol switching.
+This project is a STM32 control demo for RS01/RobStride motors from Lingzu Era. The core is the `RobStride.h`/`RobStride01.cpp` motor library, supporting both Lingzu private and MIT protocols, implementing enable/disable, position/speed/current/torque/MIT control, parameter settings, zeroing, and protocol switching.
 
 
 
-\---
+
+
+ 二、使用说明 Getting Started
 
 
 
-\## 二、使用说明 Getting Started
+硬件平台 Hardware Board： STM32F105RBT6 开发板 
+
+ `RobStride.h`, `RobStride01.cpp` 添加到项目
+
+ 需包含 `main.h`, `can.h`, `gpio.h`
+
+ CAN总线已初始化，波特率与电机设置一致
 
 
 
-\- \*\*硬件平台 Hardware Board\*\*：正点原子精英版 STM32F103ZET6 开发板 (Waveshare/ALIENTEK Elite STM32F103ZET6 Board, 实测通过)
-
-\- `RobStride.h`, `RobStride01.cpp` 添加到项目
-
-\- 需包含 `main.h`, `can.h`, `gpio.h`
-
-\- CAN总线已初始化，波特率与电机设置一致
-
-
-
-\### 2. 主循环用法 Main Loop Usage
+ 2. 主循环用法 Main Loop Usage
 
 
 
@@ -48,31 +44,31 @@ uint8\_t mode = 0; // 外部赋值，决定当前控制功能
 
 while (1) {
 
-&#x20;   switch(mode) {
+ switch(mode) {
 
-&#x20;       case 0: RobStride\_01.Enable\_Motor(); break;
+      case 0: RobStride\_01.Enable\_Motor(); break;
 
-&#x20;       case 1: RobStride\_01.Disenable\_Motor(1); break;
+       case 1: RobStride\_01.Disenable\_Motor(1); break;
 
-&#x20;       case 2: RobStride\_01.RobStride\_Motor\_move\_control(5, 0, 0, 0.0, 0.0); break;
+       case 2: RobStride\_01.RobStride\_Motor\_move\_control(5, 0, 0, 0.0, 0.0); break;
 
-&#x20;       case 3: RobStride\_01.RobStride\_Motor\_Pos\_control(2.0, 2); HAL\_Delay(5); break;
+      case 3: RobStride\_01.RobStride\_Motor\_Pos\_control(2.0, 2); HAL\_Delay(5); break;
 
-&#x20;       case 4: RobStride\_01.RobStride\_Motor\_Speed\_control(3.5, 5.0); HAL\_Delay(5); break;
+       case 4: RobStride\_01.RobStride\_Motor\_Speed\_control(3.5, 5.0); HAL\_Delay(5); break;
 
-&#x20;       case 5: RobStride\_01.RobStride\_Motor\_current\_control(1.2); HAL\_Delay(5); break;
+       case 5: RobStride\_01.RobStride\_Motor\_current\_control(1.2); HAL\_Delay(5); break;
 
-&#x20;       // ... 其他case见main.c
+       // ... 其他case见main.c
 
-&#x20;       // MIT协议专用接口见后面注意事项
+      // MIT协议专用接口见后面注意事项
 
-&#x20;       default: break;
+       default: break;
 
-&#x20;   }
+  }
 
-&#x20;   mode = 23;
+   mode = 23;
 
-&#x20;   HAL\_Delay(50);
+   HAL\_Delay(50);
 
 }
 
@@ -80,7 +76,7 @@ while (1) {
 
 
 
-\### 3. CAN 回调函数 CAN Rx Callback
+3. CAN 回调函数 CAN Rx Callback
 
 
 
@@ -92,17 +88,17 @@ CAN数据接收后需调用解析函数：
 
 void HAL\_CAN\_RxFifo0MsgPendingCallback(CAN\_HandleTypeDef \*hcan) {
 
-&#x20;   if(HAL\_CAN\_GetRxMessage(hcan,CAN\_RX\_FIFO0,\&RXHeader,RxData) == HAL\_OK) {
+   if(HAL\_CAN\_GetRxMessage(hcan,CAN\_RX\_FIFO0,\&RXHeader,RxData) == HAL\_OK) {
 
-&#x20;       if (RXHeader.IDE == CAN\_ID\_EXT)
+       if (RXHeader.IDE == CAN\_ID\_EXT)
 
-&#x20;           RobStride\_01.RobStride\_Motor\_Analysis(RxData, RXHeader.ExtId);
+           RobStride\_01.RobStride\_Motor\_Analysis(RxData, RXHeader.ExtId);
 
-&#x20;       else
+      else
 
-&#x20;           RobStride\_01.RobStride\_Motor\_Analysis(RxData, RXHeader.StdId);
+          RobStride\_01.RobStride\_Motor\_Analysis(RxData, RXHeader.StdId);
 
-&#x20;   }
+   }
 
 }
 
@@ -110,11 +106,11 @@ void HAL\_CAN\_RxFifo0MsgPendingCallback(CAN\_HandleTypeDef \*hcan) {
 
 
 
-\---
+--
 
 
 
-\## 三、主要接口说明 Main API List
+ 三、主要接口说明 Main API List
 
 
 
@@ -144,7 +140,7 @@ void HAL\_CAN\_RxFifo0MsgPendingCallback(CAN\_HandleTypeDef \*hcan) {
 
 
 
-\#### MIT协议相关
+ MIT协议相关
 
 
 
@@ -167,94 +163,67 @@ void HAL\_CAN\_RxFifo0MsgPendingCallback(CAN\_HandleTypeDef \*hcan) {
 | MIT协议切换      | `RobStride\_Motor\_MIT\_MotorModeSet(type)`                                                               |
 
 
-
-\---
-
-
-
-\## 四、注意事项 Important Notes
+--
 
 
 
-\- \*\*协议切换\*\*：如需切换协议，请首先通过 `RobStride\_Motor\_MotorModeSet(0x\*\*)` 或 `RobStride\_Motor\_MIT\_MotorModeSet(0x\*\*)` 进行协议切换，并断电重启电机，方可使用。
-
-\- \*\*MIT接口仅在 MIT 协议下有效\*\*，普通模式下禁止误用。
-
-\- \*\*标准帧 CAN ID 范围为 0x00\\\~0x7F\*\*，建议不超过此范围。
-
-\- \*\*参数地址与说明请参考 RS01 电机说明书\*\*。
-
-\- 本库中所有 `Enable\_Motor`/`Disenable\_Motor` 接口均能自动兼容当前协议，但请优先按协议规范分别调用 MIT/私有接口，避免新手混淆。
-
-\- 控制参数如角度单位为弧度，速度单位为 rad/s，电流单位为 A。
+ 四、注意事项 Important Notes
 
 
 
-\---
+协议切换：如需切换协议，请首先通过 `RobStride\_Motor\_MotorModeSet(0x)` 或 `RobStride\_Motor\_MIT\_MotorModeSet(0x)` 进行协议切换，并断电重启电机，方可使用。
+
+MIT接口仅在 MIT 协议下有效，普通模式下禁止误用。
+
+标准帧 CAN ID 范围为 0x00~0x7F，建议不超过此范围。
+
+参数地址与说明请参考 RS01 电机说明书。
+
+本库中所有 `Enable\_Motor`/`Disenable\_Motor` 接口均能自动兼容当前协议，但请优先按协议规范分别调用 MIT/私有接口，避免新手混淆。
+
+控制参数如角度单位为弧度，速度单位为 rad/s，电流单位为 A。
 
 
 
-\## 五、常见问题 FAQ
+
+五、常见问题 FAQ
 
 
 
-\- \*\*Q：PP位置模式电机使能但不转？\*\*\\
+Q：PP位置模式电机使能但不转？
 
-&#x20; A：务必调用 `RobStride\_Motor\_Pos\_control(speed, angle)` 前设置合适的目标速度（如 2\\\~5 rad/s），并检查速度参数是否通过 `0x7018` 写入。延时设置亦需充分。
+ A：务必调用 `RobStride\_Motor\_Pos\_control(speed, angle)` 前设置合适的目标速度（如 2\~5 rad/s），并检查速度参数是否通过 `0x7018` 写入。延时设置亦需充分。
 
-\- \*\*Q：MIT接口下ID发错？\*\*\\
+Q：MIT接口下ID发错？
 
-&#x20; A：请保证 CAN\\\_ID 不高于 0x7F，若出现 0x47F 这类问题请检查 ID 赋值与掩码（详见代码实现）。
+ A：请保证 CAN_ID 不高于 0x7F，若出现 0x47F 这类问题请检查 ID 赋值与掩码（详见代码实现）。
 
-\- \*\*Q：电机无响应？\*\*\\
+Q：电机无响应？
 
-&#x20; A：请检查 CAN 硬件连通性、波特率、电源，及主控和电机 ID/协议是否一致。
-
-
-
-\---
+ A：请检查 CAN 硬件连通性、波特率、电源，及主控和电机 ID/协议是否一致。
 
 
 
-\## 六、参考资料 Reference
+
+ 六、参考资料 Reference
 
 
 
-\- 《RS01电机通信协议说明书》
-
-\- 本库源码及 main.c 示例
+《RS01电机通信协议说明书》
 
 
-
-\---
-
-
-
-\## 七、联系方式 Contact
+ 七、联系方式 Contact
 
 
 
 如有问题欢迎联系作者或灵足时代技术支持。
 
 
-
-\---
-
+RobStride Motor Control Library README
 
 
 
-
-
-
-
-
-
-
-\# RobStride Motor Control Library README
-
-
-
-\## 1. Project Introduction
+1. Project Introduction
 
 
 
@@ -262,27 +231,24 @@ This project provides a STM32 (HAL) control demo for the Lingzu Era RS01/RobStri
 
 
 
-\---
+
+ 2. Getting Started
 
 
 
-\## 2. Getting Started
+Hardware Board: ALIENTEK (Waveshare) Elite STM32F103ZET6 Development Board (tested stable)
+
+Project requires STM32CubeMX/Keil or any STM32 HAL-based project
+
+Add `RobStride.h` and `RobStride01.cpp` to your project
+
+Include `main.h`, `can.h`, `gpio.h`
+
+CAN bus must be initialized and the baud rate must match the motor setting
 
 
 
-\- \*\*Hardware Board:\*\* ALIENTEK (Waveshare) Elite STM32F103ZET6 Development Board (tested stable)
-
-\- Project requires STM32CubeMX/Keil or any STM32 HAL-based project
-
-\- Add `RobStride.h` and `RobStride01.cpp` to your project
-
-\- Include `main.h`, `can.h`, `gpio.h`
-
-\- CAN bus must be initialized and the baud rate must match the motor setting
-
-
-
-\### Main Loop Example
+Main Loop Example
 
 
 
@@ -296,29 +262,29 @@ uint8\_t mode = 0; // Set by external input, determines the current function
 
 while (1) {
 
-&#x20;   switch(mode) {
+   switch(mode) {
 
-&#x20;       case 0: RobStride\_01.Enable\_Motor(); break;
+       case 0: RobStride\_01.Enable\_Motor(); break;
 
-&#x20;       case 1: RobStride\_01.Disenable\_Motor(1); break;
+      case 1: RobStride\_01.Disenable\_Motor(1); break;
 
-&#x20;       case 2: RobStride\_01.RobStride\_Motor\_move\_control(5, 0, 0, 0.0, 0.0); break;
+       case 2: RobStride\_01.RobStride\_Motor\_move\_control(5, 0, 0, 0.0, 0.0); break;
 
-&#x20;       case 3: RobStride\_01.RobStride\_Motor\_Pos\_control(2.0, 2); HAL\_Delay(5); break;
+       case 3: RobStride\_01.RobStride\_Motor\_Pos\_control(2.0, 2); HAL\_Delay(5); break;
 
-&#x20;       case 4: RobStride\_01.RobStride\_Motor\_Speed\_control(3.5, 5.0); HAL\_Delay(5); break;
+       case 4: RobStride\_01.RobStride\_Motor\_Speed\_control(3.5, 5.0); HAL\_Delay(5); break;
 
-&#x20;       case 5: RobStride\_01.RobStride\_Motor\_current\_control(1.2); HAL\_Delay(5); break;
+       case 5: RobStride\_01.RobStride\_Motor\_current\_control(1.2); HAL\_Delay(5); break;
 
-&#x20;       // ... see main.c for more cases
+       // ... see main.c for more cases
 
-&#x20;       // MIT protocol dedicated APIs see below
+       // MIT protocol dedicated APIs see below
 
-&#x20;       default: break;
+      default: break;
 
-&#x20;   }
+   }
 
-&#x20;   HAL\_Delay(50);
+   HAL\_Delay(50);
 
 }
 
@@ -326,7 +292,7 @@ while (1) {
 
 
 
-\### CAN Rx Callback Example
+CAN Rx Callback Example
 
 
 
@@ -338,17 +304,17 @@ After receiving CAN data, call the analysis function:
 
 void HAL\_CAN\_RxFifo0MsgPendingCallback(CAN\_HandleTypeDef \*hcan) {
 
-&#x20;   if(HAL\_CAN\_GetRxMessage(hcan,CAN\_RX\_FIFO0,\&RXHeader,RxData) == HAL\_OK) {
+   if(HAL\_CAN\_GetRxMessage(hcan,CAN\_RX\_FIFO0,\&RXHeader,RxData) == HAL\_OK) {
 
-&#x20;       if (RXHeader.IDE == CAN\_ID\_EXT)
+       if (RXHeader.IDE == CAN\_ID\_EXT)
 
-&#x20;           RobStride\_01.RobStride\_Motor\_Analysis(RxData, RXHeader.ExtId);
+          RobStride\_01.RobStride\_Motor\_Analysis(RxData, RXHeader.ExtId);
 
-&#x20;       else
+      else
 
-&#x20;           RobStride\_01.RobStride\_Motor\_Analysis(RxData, RXHeader.StdId);
+          RobStride\_01.RobStride\_Motor\_Analysis(RxData, RXHeader.StdId);
 
-&#x20;   }
+   }
 
 }
 
@@ -356,11 +322,7 @@ void HAL\_CAN\_RxFifo0MsgPendingCallback(CAN\_HandleTypeDef \*hcan) {
 
 
 
-\---
-
-
-
-\## 3. Main API List
+ 3. Main API List
 
 
 
@@ -390,7 +352,7 @@ void HAL\_CAN\_RxFifo0MsgPendingCallback(CAN\_HandleTypeDef \*hcan) {
 
 
 
-\*\*MIT Protocol Specific\*\*
+MIT Protocol Specific
 
 
 
@@ -413,76 +375,66 @@ void HAL\_CAN\_RxFifo0MsgPendingCallback(CAN\_HandleTypeDef \*hcan) {
 | MIT Protocol Switch   | `RobStride\_Motor\_MIT\_MotorModeSet(type)`                     |
 
 
-
-\---
-
-
-
-\## 4. Important Notes
+--
 
 
 
-\- \*\*Protocol switching:\*\* To switch protocol, first use `RobStride\_Motor\_MotorModeSet(0x\*\*)` or `RobStride\_Motor\_MIT\_MotorModeSet(0x\*\*)`, then power-cycle (reboot) the motor before using new protocol-related functions.
-
-\- \*\*Standard CAN frame ID range is 0x00\\\~0x7F\*\*; do not exceed this range.
-
-\- \*\*Parameter addresses and details are subject to the RS01 motor protocol manual.\*\*
-
-\- All `Enable\_Motor`/`Disenable\_Motor` functions auto-adapt to protocol but you should use the appropriate APIs as per protocol when possible.
-
-\- Control parameters: angle in radians, speed in rad/s, current in Amps.
+4. Important Notes
 
 
 
-\---
+Protocol switching: To switch protocol, first use `RobStride\_Motor\_MotorModeSet(0x\*\*)` or `RobStride\_Motor\_MIT\_MotorModeSet(0x\*\*)`, then power-cycle (reboot) the motor before using new protocol-related functions.
+
+Standard CAN frame ID range is 0x00~0x7F; do not exceed this range.
+
+Parameter addresses and details are subject to the RS01 motor protocol manual.
+
+ All `Enable\_Motor`/`Disenable\_Motor` functions auto-adapt to protocol but you should use the appropriate APIs as per protocol when possible.
+
+ Control parameters: angle in radians, speed in rad/s, current in Amps.
 
 
 
-\## 5. FAQ
+
+
+5. FAQ
 
 
 
-\- \*\*Q: PP position mode enabled but no movement?\*\*\\
+Q: PP position mode enabled but no movement?
 
-&#x20; A: Make sure to set an appropriate target speed (e.g. 2\\\~5 rad/s) with `RobStride\_Motor\_Pos\_control`, and check if speed is set via `0x7018`. Use sufficient delays after mode switching.
+A: Make sure to set an appropriate target speed (e.g. 2~5 rad/s) with `RobStride\_Motor\_Pos\_control`, and check if speed is set via `0x7018`. Use sufficient delays after mode switching.
 
-\- \*\*Q: Wrong CAN ID in MIT commands?\*\*\\
+Q: Wrong CAN ID in MIT commands?
 
-&#x20; A: Make sure `CAN\_ID` does not exceed 0x7F; if you see IDs like 0x47F, check your ID assignment and masking in code.
+ A: Make sure `CAN_ID` does not exceed 0x7F; if you see IDs like 0x47F, check your ID assignment and masking in code.
 
-\- \*\*Q: No response from motor?\*\*\\
+Q: No response from motor?
 
-&#x20; A: Check CAN bus wiring, baudrate, power supply, and make sure the master and motor IDs/protocol match.
-
-
-
-\---
+ A: Check CAN bus wiring, baudrate, power supply, and make sure the master and motor IDs/protocol match.
 
 
-
-\## 6. References
+--
 
 
 
-\- RS01 Motor Protocol Manual
-
-\- This library source code and main.c example
+6. References
 
 
 
-\---
+ RS01 Motor Protocol Manual
+
+ This library source code and main.c example
 
 
 
-\## 7. Contact
+7. Contact
 
 
 
 For support, contact the author or RobStride technical support.
 
 
-
-\---
 
 
 
