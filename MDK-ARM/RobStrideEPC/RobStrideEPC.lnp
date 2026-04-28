@@ -1,0 +1,25 @@
+--cpu Cortex-M3
+"robstrideepc\startup_stm32f105xc.o"
+"robstrideepc\main.o"
+"robstrideepc\gpio.o"
+"robstrideepc\can.o"
+"robstrideepc\stm32f1xx_it.o"
+"robstrideepc\stm32f1xx_hal_msp.o"
+"robstrideepc\robstride_control.o"
+"robstrideepc\stm32f1xx_hal_gpio_ex.o"
+"robstrideepc\stm32f1xx_hal_can.o"
+"robstrideepc\stm32f1xx_hal.o"
+"robstrideepc\stm32f1xx_hal_rcc.o"
+"robstrideepc\stm32f1xx_hal_rcc_ex.o"
+"robstrideepc\stm32f1xx_hal_gpio.o"
+"robstrideepc\stm32f1xx_hal_dma.o"
+"robstrideepc\stm32f1xx_hal_cortex.o"
+"robstrideepc\stm32f1xx_hal_pwr.o"
+"robstrideepc\stm32f1xx_hal_flash.o"
+"robstrideepc\stm32f1xx_hal_flash_ex.o"
+"robstrideepc\stm32f1xx_hal_exti.o"
+"robstrideepc\system_stm32f1xx.o"
+--strict --scatter "RobStrideEPC\RobStrideEPC.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "RobStrideEPC.map" -o RobStrideEPC\RobStrideEPC.axf
