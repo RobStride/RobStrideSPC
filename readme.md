@@ -1,4 +1,4 @@
-RobStride 电机控制库使用说明 / RobStride Motor Control Library README
+RobStride 电机控制库使用说明 / RobStride Motor Control Library README冯天宇
 
 一、项目简介 Project Introduction
 
