@@ -82,4 +82,89 @@ Q：电机无响应？
 - 《RS01电机通信协议说明书》
 - 本库源码及 main.c 示例
 
+
+
+-----------------------------------------------------------------------------------------
+
+
+RobStride Motor Control Library README
+
+1. Project Introduction
+
+ This project is a STM32 control demo for RS01/RobStride motors from Lingzu Era. The core is the `robstride_control.h`/`robstride_control.c` motor library, supporting both Lingzu private and MIT protocols, implementing enable/disable, position/speed/current/torque/MIT control, parameter settings, zeroing, and protocol switching.
+
 ---
+
+2.Getting Started
+
+ Hardware Board： STM32F105RBT6 Development Board
+ `robstride_control.h`, `robstride_control.c` Add to Project
+Must include `main.h`, `can.h`, `gpio.h`
+The CAN bus has been initialized; the baud rate matches the motor settings.
+
+2. 1. Main Loop Usage Main Loop Usage
+
+The following structure is recommended for the core main loop (it is suggested that scene switching be controlled via the `mode` variable, with each `case` corresponding to a specific typical function; for details, please refer to the `main.c` example):
+
+```c
+uint8_t mode = 0; // External assignment determines the current control function.
+
+ while (1)
+  {
+	switch (mode) 
+	{
+	case 0:RobStride_motor_enable();break;
+	case 1:RobStride_motor_reset();break;
+	case 2:RobStrideMotor_move_control(1, 0, 1, 0.1, 0.1);break;
+	case 3RobStride_Motor_Pos_PP_control(6, 1, 2);break;
+	case 4:RobStride_Motor_Pos_CSP_control(4,1);break;
+	case 5:RobStride_Motor_Speed_control(1, 1, 2);break;
+        // ... See main.c for other cases.
+	// See the "Notes" section below for interfaces specific to the MIT License.
+        default: break;
+    }
+    HAL_Delay(50);
+}
+```
+
+2.2. Macro Definition Mappings Macro Definition Mappings
+
+Different motor models correspond to different system parameters (switching between motor models is achieved by modifying the `MOTOR_TYPE` macro definition; for details, please refer to `robstride_control.h`).
+```h
+#define MOTOR_TYPE 0
+#define P_MIN -12.57f
+#define P_MAX 12.57f
+#if MOTOR_TYPE == 0
+        #define V_MIN -33.0f
+        #define V_MAX 33.0f
+        #define KP_MIN 0.0f
+        #define KP_MAX 500.0f
+        #define KD_MIN 0.0f
+        #define KD_MAX 5.0f
+        #define T_MIN -14.0f
+        #define T_MAX 14.0f
+#elif MOTOR_TYPE == 1
+        #define V_MIN -44.0f 
+        #define V_MAX 44.0f
+        #define KP_MIN 0.0f
+        #define KP_MAX 500.0f
+        #define KD_MIN 0.0f
+        #define KD_MAX 5.0f
+        #define T_MIN -17.0f
+        #define T_MAX 17.0f
+
+3.Frequently Asked Questions FAQ
+
+Q：Is the motor enabled in PP (Position) mode but not rotating?
+  A：Must be called `RobStride_Motor_Pos_control(speed, angle)` First, set an appropriate target velocity (e.g., 2–5 rad/s), and verify that the velocity parameter has been written via `0x7018`. The delay settings must also be sufficiently configured.。
+Q：Was the ID sent incorrectly via the MIT interface?
+  A：Please ensure that the CAN_ID does not exceed 0x7F. If issues such as 0x47F arise, please verify the ID assignment and the mask (refer to the code implementation for details).
+Q：Motor Unresponsive？
+  A：Please check the CAN hardware connectivity, baud rate, and power supply, as well as whether the IDs and protocols of the main controller and the motor are consistent.
+
+---
+
+4. References
+
+- *RS01 Motor Communication Protocol Specification*
+- Source code for this library and the `main.c` example
