@@ -10,7 +10,7 @@ RobStride 电机控制库使用说明 / RobStride Motor Control Library README
 
 二、使用说明 Getting Started
 
-硬件平台 Hardware Board**： STM32F105RBT6 开发板 
+硬件平台 Hardware Board： STM32F105RBT6 开发板 
  `robstride_control.h`, `robstride_control.c` 添加到项目
 需包含 `main.h`, `can.h`, `gpio.h`
 CAN总线已初始化，波特率与电机设置一致
@@ -68,11 +68,11 @@ uint8_t mode = 0; // 外部赋值，决定当前控制功能
 
  三、常见问题 FAQ
 
-Q：PP位置模式电机使能但不转？**\
+Q：PP位置模式电机使能但不转？
   A：务必调用 `RobStride_Motor_Pos_control(speed, angle)` 前设置合适的目标速度（如 2\~5 rad/s），并检查速度参数是否通过 `0x7018` 写入。延时设置亦需充分。
-Q：MIT接口下ID发错？**\
+Q：MIT接口下ID发错？
   A：请保证 CAN\_ID 不高于 0x7F，若出现 0x47F 这类问题请检查 ID 赋值与掩码（详见代码实现）。
-Q：电机无响应？**\
+Q：电机无响应？
   A：请检查 CAN 硬件连通性、波特率、电源，及主控和电机 ID/协议是否一致。
 
 ---
